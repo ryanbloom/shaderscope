@@ -1,0 +1,52 @@
+/* @tailwind base; */
+@tailwind utilities;
+
+html {
+    --light-code: #888;
+}
+
+code, .timecode {
+    font-family: 'Fira Code', monospace;
+    cursor: default;
+}
+
+.timecode {
+    color: var(--light-code)
+}
+
+/* Spans */
+
+.span-default {
+    flex-grow: 1;
+}
+.span-variable {
+    border: solid #ccc 2px;
+    border-radius: 4px;
+}
+.span-variable-active {
+    border: solid black 2px;
+}
+.span-variable:hover {
+    border-color: #aaa;
+}
+.span-value {
+    color: var(--light-code);
+    width: 4em;
+    text-align: right;
+}
+
+@media (prefers-color-scheme: dark) {
+    body {
+        background: black;
+        color: white;
+    }
+    .span-variable {
+        border-color: #666;
+    }
+    .span-variable:hover {
+        border-color: #aaa;
+    }
+    .span-variable-active, .span-variable-active:hover {
+        border-color: #fff;
+    }
+}
