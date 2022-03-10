@@ -1,7 +1,8 @@
 import React from 'react'
 import { Canvas } from './Canvas'
-import { canvasSize } from './options'
-
+import { canvasSize, crosshairsSize } from './options'
+import CrosshairsImage from './crosshairs-small.svg'
+import { Button } from './Button'
 export class CanvasPane extends React.Component {
     constructor(props) {
         super(props)
@@ -11,14 +12,16 @@ export class CanvasPane extends React.Component {
     }
     render() {
         let crosshairsButton = this.props.crosshairs
-            ? <button onClick={this.deselectCrosshairs.bind(this)}>Hide crosshairs</button>
+            ? <Button onClick={this.deselectCrosshairs.bind(this)}>Hide crosshairs</Button>
             : []
         let crosshairsDiv = this.props.crosshairs
-            ? <div style={{ 'left': this.props.crosshairs.x + 'px', 'top': this.flipY(this.props.crosshairs.y) + 'px' }} className='pointer-events-none text-black absolute'>x</div>
+            ? <div style={{ 'left': this.props.crosshairs.x - crosshairsSize/2, 'top': this.flipY(this.props.crosshairs.y) - crosshairsSize/2 }} className='pointer-events-none text-black absolute'>
+                <CrosshairsImage />
+            </div>
             : []
         return <div>
             <div style={{width: canvasSize, height: canvasSize}}>
-                <div style={{ position: 'absolute' }} onMouseDown={this.mouseDown.bind(this)} onMouseMove={this.mouseMove.bind(this)} onMouseUp={this.mouseUp.bind(this)}>
+                <div className='rounded-md overflow-hidden' style={{ position: 'absolute' }} onMouseDown={this.mouseDown.bind(this)} onMouseMove={this.mouseMove.bind(this)} onMouseUp={this.mouseUp.bind(this)}>
                     {crosshairsDiv}
                     <Canvas width={canvasSize} height={canvasSize} shaderInputs={{ iTime: this.props.time, width: canvasSize, height: canvasSize }} fragmentSource={this.getSource()} />
                 </div>

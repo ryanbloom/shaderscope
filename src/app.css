@@ -1,17 +1,29 @@
-/* @tailwind base; */
+@tailwind base;
 @tailwind utilities;
 
 html {
     --light-code: #888;
+    --code-font: 'Fira Code', monospace;
+    --fg: #0F172A;
+    --bg: white;
 }
 
-code, .timecode {
-    font-family: 'Fira Code', monospace;
-    cursor: default;
+body {
+    color: var(--fg);
+    background: var(--bg);
 }
 
-.timecode {
-    color: var(--light-code)
+textarea {
+    font-family: var(--code-font);
+    background: none;
+}
+
+input {
+    background: none;
+}
+
+code, .code {
+    font-family: var(--code-font);
 }
 
 /* Spans */
@@ -22,6 +34,7 @@ code, .timecode {
 .span-variable {
     border: solid #ccc 2px;
     border-radius: 4px;
+    cursor: default;
 }
 .span-variable-active {
     border: solid black 2px;
@@ -35,10 +48,12 @@ code, .timecode {
     text-align: right;
 }
 
+/* Dark mode */
+
 @media (prefers-color-scheme: dark) {
-    body {
-        background: black;
-        color: white;
+    html {
+        --fg: white;
+        --bg: black;
     }
     .span-variable {
         border-color: #666;

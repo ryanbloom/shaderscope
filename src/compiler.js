@@ -27,12 +27,14 @@ export class Program {
     spans(time, coord) {
         let symbols = null
         if (coord) {
-        symbols = {
+            symbols = {
                 t: time,
                 x: coord.x,
                 y: coord.y,
                 width: canvasSize,
-                height: canvasSize
+                height: canvasSize,
+                pi: Math.PI,
+                tau: 2*Math.PI
             }
         }
         let results = []
@@ -66,7 +68,7 @@ export class Program {
         if (!output) {
             output = 'result'
         }
-        let known = ['iTime', 'fixedX', 'fixedY', 'iResolution', 't', 'x', 'y', 'red', 'green', 'blue', 'width', 'height']
+        let known = ['iTime', 'fixedX', 'fixedY', 'iResolution', 't', 'x', 'y', 'red', 'green', 'blue', 'width', 'height', 'pi', 'tau']
         const lines = this.ast.map(statement => {
             if (statement.type == nodeType.ASSIGNMENT) {
                 if (known.includes(statement.identifier.text)) {
@@ -84,6 +86,9 @@ export class Program {
         uniform float fixedY;
         uniform float width;
         uniform float height;
+
+        float pi = 3.1415926535;
+        float tau = 6.2831853072;
         
         void main(void) {
             ${initializers}
@@ -101,11 +106,10 @@ export class Program {
         return glCode
     }
     
-    compileTimeline(output, duration) {
-        let width = 300
+    compileTimeline(output, scale) {
         let initializers = `float x = fixedX;
         float y = fixedY;
-        float t = gl_FragCoord.x * ${duration / width};`
+        float t = gl_FragCoord.x * ${scale};`
         return this.compileInner(output, initializers)
     }
     

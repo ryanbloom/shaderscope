@@ -1,4 +1,5 @@
 import React from 'react'
+import { Button } from './Button'
 
 export class Editor extends React.Component {
     constructor(props) {
@@ -47,7 +48,7 @@ export class Viewer extends React.Component {
         })
         let btn = this.props.variable == 'result'
             ? []
-            : <button onClick={_ => this.props.onSelect('result')}>Show result</button>
+            : <Button onClick={_ => this.props.onSelect('result')}>Show result</Button>
         return <div>
             <pre>
                 <code>

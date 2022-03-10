@@ -12,9 +12,8 @@ export class Canvas extends React.Component {
         this.canvasRef = React.createRef()
     }
     render() {
-        return <div>
-            <canvas width={this.props.width} height={this.props.height} ref={this.canvasRef}></canvas>
-        </div>
+        return <canvas className={this.props.className} width={this.props.width} height={this.props.height} ref={this.canvasRef}>
+        </canvas>
     }
     componentDidUpdate() {
         this.renderShader()
@@ -50,7 +49,7 @@ export class Canvas extends React.Component {
     }
     renderShader() {
         let canvas = this.canvasRef.current
-        let gl = canvas.getContext('experimental-webgl');
+        let gl = canvas.getContext('experimental-webgl')
         let program = this.setupShader(gl, defaultVertSource, this.props.fragmentSource)
         function set1f(name, value) {
             const loc = gl.getUniformLocation(program, name)
