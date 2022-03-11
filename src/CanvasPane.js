@@ -15,7 +15,7 @@ export class CanvasPane extends React.Component {
             ? <Button onClick={this.deselectCrosshairs.bind(this)}>Hide crosshairs</Button>
             : []
         let crosshairsDiv = this.props.crosshairs
-            ? <div style={{ 'left': this.props.crosshairs.x - crosshairsSize/2, 'top': this.flipY(this.props.crosshairs.y) - crosshairsSize/2 }} className='pointer-events-none text-black absolute'>
+            ? <div style={{ 'left': this.props.crosshairs.x - crosshairsSize/2, 'top': this.flipY(this.props.crosshairs.y) - crosshairsSize/2 }} className='pointer-events-none absolute mix-blend-difference'>
                 <CrosshairsImage />
             </div>
             : []
