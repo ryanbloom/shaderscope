@@ -14,9 +14,15 @@ class Token {
     }
 }
 
-function isAlpha(c) {
+function isValidIdentifierStartChar(c) {
     let code = c.charCodeAt(0)
-    return (code > 64 && code < 91) /* upper */ || (code > 96 && code < 123) /* lower */
+    return (code > 64 && code < 91) // upper
+        || (code > 96 && code < 123) // lower
+        || code == 95 // underscore
+}
+
+function isValidIdentifierChar(c) {
+    return isValidIdentifierStartChar(c) || isNum(c)
 }
 
 function isNum(c) {
@@ -37,7 +43,7 @@ export function tokenize(code) {
         let c = code[current]
         start = current
 
-        if (c == '/' && current +1 < code.length && code[current+1] == '/') {
+        if (c == '/' && current+1 < code.length && code[current+1] == '/') {
             // Comment
             while (code[current] != '\n') {
                 current += 1
@@ -45,8 +51,8 @@ export function tokenize(code) {
         } else if (['(', ')', '+', '-', '*', '/', '^', '=', ','].includes(c)) {
             current++
             addToken(tokenType.PUNCTUATION)
-        } else if (isAlpha(c)) {
-            while (isAlpha(code[current])) {
+        } else if (isValidIdentifierStartChar(c)) {
+            while (isValidIdentifierChar(code[current])) {
                 current++
             }
             addToken(tokenType.IDENTIFIER)

@@ -12,6 +12,8 @@ export function evaluate(node, symtab) {
                 return evaluate(node.left, symtab) * evaluate(node.right, symtab)
             case '/':
                 return evaluate(node.left, symtab) / evaluate(node.right, symtab)
+            case '^':
+                return Math.pow(evaluate(node.left, symtab), evaluate(node.right, symtab))
         }
     }
     if (node.type == nodeType.NUMBER) {
@@ -33,5 +35,5 @@ export function evaluate(node, symtab) {
         console.log(`Unknown variable ${node.text}`)
         return 0
     }
-    console.log(`Unrecognized node type ${node.type}`)
+    console.log(`Unrecognized node of type ${node.type}`)
 }

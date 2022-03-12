@@ -76,7 +76,7 @@ export function parse(tokens) {
             let s = tokens[i].start
             let id = tokens[i].text
             i += 2
-            args = []
+            let args = []
             args.push(sum())
             while (match(tokenType.PUNCTUATION, ',')) {
                 args.push(sum())

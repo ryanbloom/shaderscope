@@ -1,7 +1,7 @@
 import { tokenize } from './lexer'
 import { parse, nodeType, ParseError } from './parser'
 import { evaluate } from './evaluate'
-import { canvasSize } from './options'
+import { canvasSize } from '../options'
 
 export class Program {
     constructor(source) {
@@ -74,6 +74,7 @@ export class Program {
                 if (known.includes(statement.identifier.text)) {
                     return this.printGLSL(statement) + ';'
                 } else {
+                    known.push(statement.identifier.text)
                     return 'float ' + statement.identifier.text + ' = ' + this.printGLSL(statement.value) + ';'
                 }
             }

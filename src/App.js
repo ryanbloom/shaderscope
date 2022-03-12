@@ -3,7 +3,7 @@ import { Button } from './Button'
 import { CanvasPane } from './CanvasPane'
 import { Editor, Viewer } from './Editor'
 import { Timeline } from './Timeline'
-import { Program } from './compiler'
+import { Program } from './language'
 import { defaultDuration, defaultSource } from './options'
 import './app.css'
 

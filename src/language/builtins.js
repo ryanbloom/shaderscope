@@ -7,9 +7,11 @@ function smoothstep(edge0, edge1, x) {
     return t * t * (3.0 - 2.0 * t)
 }
 
-export default builtins = {
+export default {
     'sin': Math.sin,
     'cos': Math.cos,
+    'tan': Math.tan,
+    'abs': Math.abs,
     'sqrt': Math.sqrt,
     'exp': Math.exp,
     'clamp': clamp,
