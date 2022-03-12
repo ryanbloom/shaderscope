@@ -1,13 +1,4 @@
 {
-  "name": "shaderscope",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "author": "Ryan Bloom",
-  "license": "ISC",
   "dependencies": {
     "@babel/core": "^7.17.5",
     "@emotion/react": "^11.8.2",
