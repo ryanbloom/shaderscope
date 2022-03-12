@@ -11,9 +11,6 @@ export class CanvasPane extends React.Component {
         }
     }
     render() {
-        let crosshairsButton = this.props.crosshairs
-            ? <Button onClick={this.deselectCrosshairs.bind(this)}>Hide crosshairs</Button>
-            : []
         let crosshairsDiv = this.props.crosshairs
             ? <div style={{ 'left': this.props.crosshairs.x - crosshairsSize/2, 'top': this.flipY(this.props.crosshairs.y) - crosshairsSize/2 }} className='pointer-events-none absolute mix-blend-difference'>
                 <CrosshairsImage />
@@ -21,12 +18,11 @@ export class CanvasPane extends React.Component {
             : []
         return <div>
             <div style={{width: canvasSize, height: canvasSize}}>
-                <div className='rounded-md overflow-hidden' style={{ position: 'absolute' }} onMouseDown={this.mouseDown.bind(this)} onMouseMove={this.mouseMove.bind(this)} onMouseUp={this.mouseUp.bind(this)}>
+                <div className='rounded-md border border-slate-200 dark:border-slate-600 overflow-hidden' style={{ position: 'absolute' }} onMouseDown={this.mouseDown.bind(this)} onMouseMove={this.mouseMove.bind(this)} onMouseUp={this.mouseUp.bind(this)} onDoubleClick={e => this.props.moveCrossHairs(undefined)}>
                     {crosshairsDiv}
                     <Canvas width={canvasSize} height={canvasSize} shaderInputs={{ iTime: this.props.time, width: canvasSize, height: canvasSize }} fragmentSource={this.getSource()} />
                 </div>
             </div>
-            {crosshairsButton}
         </div>
     }
 
@@ -59,8 +55,5 @@ export class CanvasPane extends React.Component {
             x: e.clientX - r.left,
             y: r.top + r.height - e.clientY
         })
-    }
-    deselectCrosshairs() {
-        this.props.moveCrossHairs(undefined)
     }
 }

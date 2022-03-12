@@ -16,6 +16,8 @@ body {
 textarea {
     font-family: var(--code-font);
     background: none;
+    resize: none;
+    line-height: 1.85;
 }
 
 input {

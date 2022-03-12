@@ -30,7 +30,7 @@ export class Timeline extends React.Component {
             {backgroundColoring}
         </div>
         let playPauseIcon = this.state.playing ? <PauseRounded /> : <PlayArrowRounded />
-        return <div className='mt-2 flex flex-row items-center'>
+        return <div className='flex flex-row items-center'>
             <Button onClick={this.playPause.bind(this)}>
                 {playPauseIcon}
             </Button>

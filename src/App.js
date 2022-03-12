@@ -38,6 +38,7 @@ export class App extends React.Component {
         } else {
             codeComponent = <Viewer shader={this.state.runningShaderInfo}
                 onSelect={this.selectVariable.bind(this)}
+                toggle={this.toggleEditor.bind(this)}
                 time={this.state.time} coord={this.state.crosshairs}
                 variable={this.state.runningShaderInfo.variable} />
         }
@@ -46,13 +47,13 @@ export class App extends React.Component {
                 <LogoImage />
             </div>
             <div className='flex flex-row px-5'>
-                <div className='pr-4 flex-col grow'>
+                <div className='pr-4 flex flex-col grow'>
                     {codeComponent}
                     <Button onClick={this.toggleEditor.bind(this)}>
                         {this.state.editing ? 'Run' : 'Edit'}
                     </Button>
                 </div>
-                <div className='flex flex-col grow'>
+                <div className='flex flex-col'>
                     <div style={{width: 500}}>
                         <CanvasPane shader={this.state.runningShaderInfo}
                             time={this.state.time} crosshairs={this.state.crosshairs}
@@ -95,6 +96,7 @@ export class App extends React.Component {
     }
     editDuration(d) {
         this.setState({
+            time: Math.min(d, this.state.time),
             runningShaderInfo: {
                 source: this.state.shaderSource,
                 program: this.state.runningShaderInfo.program,

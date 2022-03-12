@@ -6,9 +6,10 @@ export class Editor extends React.Component {
         super(props)
     }
     render() {
-        return <div>
+        return <div className='flex-grow'>
             <textarea onKeyDown={this.keyPress.bind(this)}
-            rows={10} cols={30} value={this.props.sourceCode}
+            value={this.props.sourceCode}
+            className='w-full h-full'
             onChange={this.props.onChange} />
         </div>
     }
@@ -24,7 +25,7 @@ export class Viewer extends React.Component {
             let ch = line.map((span, idx2) => {
                 if (span.type == 'value') {
                     if (span.value != null) {
-                        return <span key={idx2} className='span-value grow'>
+                        return <span key={idx2} className='span-value cursor-default grow'>
                             {span.value.toFixed(2) + '\n'}
                         </span>
                     } else {
@@ -40,11 +41,11 @@ export class Viewer extends React.Component {
                         {span.text}
                     </span>
                 }
-                return <span key={idx2} className={'span-' + span.type}>
+                return <span key={idx2} className={'span-' + span.type} onClick={this.props.toggle}>
                     {span.text}
                 </span>
             })
-            return <div key={idx} className='flex flex-row my-1'>{ch}</div>
+            return <div key={idx} className='flex flex-row my-0.5'>{ch}</div>
         })
         let btn = this.props.variable == 'result'
             ? []
