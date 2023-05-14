@@ -10,10 +10,10 @@ export class Program {
         }
         this.source = source
         let tokens = tokenize(source)
-        console.log('Tokens', tokens)
+        // console.log('Tokens', tokens)
         try {
             let ast = parse(tokens)
-            console.log('Tree', ast)
+            // console.log('Tree', ast)
             this.ast = ast
         } catch (e) {
             this.ast = []

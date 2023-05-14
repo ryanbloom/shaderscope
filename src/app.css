@@ -11,6 +11,7 @@ html {
 body {
     color: var(--fg);
     background: var(--bg);
+    user-select: none;
 }
 
 textarea {
@@ -38,11 +39,11 @@ code, .code {
     border-radius: 4px;
     cursor: default;
 }
-.span-variable-active {
-    border: solid black 2px;
-}
 .span-variable:hover {
     border-color: #aaa;
+}
+.span-variable-active, .span-variable-active:hover {
+    border: solid black 2px;
 }
 .span-value {
     color: var(--light-code);

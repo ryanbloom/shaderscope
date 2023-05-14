@@ -16,16 +16,21 @@ if (!initialSource) {
 
 export function App() {
     const [shaderSource, setShaderSource] = useState(initialSource)
-    const [crosshairs, setCrosshairs] = useState(undefined)
-    const [time, setTime] = useState(0)
+
+    const [hoveredPoint, hoverPoint] = useState(null)
+    const [lockedPoint, lockPoint] = useState(null)
+    const [hoveredVariable, hoverVariable] = useState(null)
+    const [lockedVariable, lockVariable] = useState(null)
+    const [hoveredTime, hoverTime] = useState(0)
+    const [lockedTime, lockTime] = useState(0)
+
     const [editing, setEditing] = useState(true)
     const [runningShaderInfo, setRunningShaderInfo] = useState({
         source: shaderSource,
         program: new Program(shaderSource),
-        variable: 'result',
         duration: 5.0
     })
-    
+
     function toggleEditor(e) {
         if (editing) {
             setEditing(false)
@@ -49,14 +54,6 @@ export function App() {
             variable: runningShaderInfo.variable
         })
     }
-    function selectVariable(varName) {
-        setRunningShaderInfo({
-            source: shaderSource,
-            program: runningShaderInfo.program,
-            duration: runningShaderInfo.duration,
-            variable: varName
-        })
-    }
 
     let codeComponent
     if (editing) {
@@ -64,11 +61,15 @@ export function App() {
             toggle={toggleEditor}
             onChange={e => setShaderSource(e.target.value)} />
     } else {
-        codeComponent = <Viewer shader={runningShaderInfo}
-            onSelect={selectVariable}
+        codeComponent = <Viewer
+            shader={runningShaderInfo}
+            lockedVariable={lockedVariable}
+            time={hoveredTime || lockedTime}
+            point={hoveredPoint || lockedPoint}
+            hover={hoverVariable}
+            lock={lockVariable}
             toggle={toggleEditor}
-            time={time} coord={crosshairs}
-            variable={runningShaderInfo.variable} />
+        />
     }
     return <div>
         <div className='w-full h-20 flex flex-row items-center p-5'>
@@ -82,13 +83,24 @@ export function App() {
                 </Button>
             </div>
             <div className='flex flex-col'>
-                <div style={{width: 500}}>
-                    <CanvasPane shader={runningShaderInfo}
-                        time={time} crosshairs={crosshairs}
-                        moveCrossHairs={setCrosshairs} />
-                    <Timeline crosshairs={crosshairs}
-                        shader={runningShaderInfo} value={time}
-                        onChange={setTime} editDuration={editDuration}/>
+                <div style={{ width: 500 }}>
+                    <CanvasPane
+                        shader={runningShaderInfo}
+                        variable={hoveredVariable || lockedVariable || 'result'}
+                        time={hoveredTime || lockedTime}
+                        hoveredPoint={hoveredPoint}
+                        lockedPoint={lockedPoint}
+                        hover={hoverPoint}
+                        lock={lockPoint} />
+                    <Timeline
+                        shader={runningShaderInfo}
+                        variable={hoveredVariable || lockedVariable || 'result'}
+                        hoveredTime={hoveredTime}
+                        lockedTime={lockedTime}
+                        point={hoveredPoint || lockedPoint}
+                        hover={hoverTime}
+                        lock={lockTime}
+                        editDuration={editDuration} />
                 </div>
             </div>
         </div>
