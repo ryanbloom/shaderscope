@@ -100,12 +100,12 @@ export function Timeline(props) {
     }
 
     let backgroundColoring = props.point
-        ? <Canvas className='border border-slate-200 dark:border-slate-600 rounded-md'
+        ? <Canvas
             width={timelineCanvasWidth} height={timelineHeight} fragmentSource={getShader()}
             shaderInputs={{ fixedX: props.point.x, fixedY: props.point.y, width: canvasSize, height: canvasSize }} />
         : []
-    let backgroundContainer = <div className='w-full rounded-md overflow-hidden bg-slate-200 dark:bg-slate-600'
-        style={{ height: timelineHeight + 2 /* for the border */ }} ref={timelineContainerRef}>
+    let backgroundContainer = <div className='w-full overflow-hidden bg-slate-200 dark:bg-slate-600 outline outline-2 outline-slate-200 dark:outline-slate-600'
+        style={{ height: timelineHeight, borderRadius: timelineHeight/2 }} ref={timelineContainerRef}>
         {backgroundColoring}
     </div>
     let playPauseIcon = playing ? <PauseRounded /> : <PlayArrowRounded />

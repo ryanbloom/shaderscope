@@ -33,7 +33,8 @@ export function CanvasPane(props) {
         : []
     return <div>
         <div style={{ width: canvasSize, height: canvasSize }}>
-            <div className='rounded-md border border-slate-200 dark:border-slate-600 overflow-hidden'
+            
+            <div className='rounded-md outline outline-2 outline-slate-200 dark:outline-slate-600 overflow-hidden'
                 style={{ position: 'absolute' }}
                 onMouseDown={moveCrossHairs}
                 onMouseMove={moveCrossHairs}

@@ -1,6 +1,6 @@
 export const canvasSize = 500
 export const crosshairsSize = 24
-export const timelineHeight = 12
+export const timelineHeight = 14
 export const playheadHeight = 30
 export const defaultDuration = 5.0
 export const defaultSource = `rRadius = 0.5 + 0.3*sin(t)
