@@ -5,7 +5,8 @@ export const nodeType = {
     NUMBER: 1,
     BINOP: 2,
     ASSIGNMENT: 3,
-    FUNCTION: 4
+    FUNCTION: 4,
+    UNOP: 5
 }
 
 export class ParseError extends Error {
@@ -59,6 +60,7 @@ export function parse(tokens) {
         if (match(tokenType.PUNCTUATION, '(')) {
             let t = sum()
             token(tokenType.PUNCTUATION, ')')
+            t.end += 1
             return t
         }
         if (tokens[i].type == tokenType.NUMBER) {
@@ -96,6 +98,21 @@ export function parse(tokens) {
         }
     }
 
+    function unary() {
+        if (match(tokenType.PUNCTUATION, '-')) {
+            const operation = tokens[i-1]
+            const operand = unary()
+            return {
+                type: nodeType.UNOP,
+                operation: operation.text,
+                operand: operand,
+                start: operation.start,
+                end: operand.end
+            }
+        }
+        return primary()
+    }
+
     function matchAny(type, texts) {
         if (tokens[i].type == type && texts.includes(tokens[i].text)) {
             i++
@@ -123,7 +140,7 @@ export function parse(tokens) {
         }
     }
 
-    const power = leftAssociativeBinOpParser(['^'], primary)
+    const power = leftAssociativeBinOpParser(['^'], unary)
     const product = leftAssociativeBinOpParser(['*', '/'], power)
     const sum = leftAssociativeBinOpParser(['+', '-'], product)
 

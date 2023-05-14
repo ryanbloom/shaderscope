@@ -103,7 +103,6 @@ export class Program {
                 : `gl_FragColor = vec4(${output}, ${output}, ${output}, 1.0);`
             }
         }`
-        // console.log(glCode)
         return glCode
     }
     
@@ -130,6 +129,8 @@ export class Program {
                     return `pow(${this.printGLSL(node.left)}, ${this.printGLSL(node.right)})`
                 }
                 return '(' + this.printGLSL(node.left) + node.operation + this.printGLSL(node.right) + ')'
+            case nodeType.UNOP:
+                return '(' + node.operation + this.printGLSL(node.operand) + ')'
             case nodeType.FUNCTION:
                 return node.name + '(' + node.args.map(this.printGLSL.bind(this)).join(',') + ')'
             case nodeType.NUMBER:

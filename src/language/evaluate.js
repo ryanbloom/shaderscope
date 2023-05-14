@@ -16,6 +16,11 @@ export function evaluate(node, symtab) {
                 return Math.pow(evaluate(node.left, symtab), evaluate(node.right, symtab))
         }
     }
+    if (node.type == nodeType.UNOP) {
+        if (node.operation == '-') {
+            return -1 * evaluate(node.operand, symtab)
+        }
+    }
     if (node.type == nodeType.NUMBER) {
         return node.value
     }
