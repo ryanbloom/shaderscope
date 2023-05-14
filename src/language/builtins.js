@@ -1,5 +1,11 @@
 function clamp(x, lo, hi) {
-    return Math.max(Math.min(x, hi), lo)
+    if (x < lo) {
+        return lo
+    }
+    if (x > hi) {
+        return hi
+    }
+    return x
 }
 
 function smoothstep(edge0, edge1, x) {
@@ -7,13 +13,26 @@ function smoothstep(edge0, edge1, x) {
     return t * t * (3.0 - 2.0 * t)
 }
 
+function step(edge, x) {
+    return x > edge ? 1 : 0
+}
+
+function mix(x, y, a) {
+    return x * (1 - a) + y * a
+}
+
 export default {
     'sin': Math.sin,
     'cos': Math.cos,
     'tan': Math.tan,
+    'atan': Math.atan,
     'abs': Math.abs,
     'sqrt': Math.sqrt,
     'exp': Math.exp,
     'clamp': clamp,
-    'smoothstep': smoothstep
+    'smoothstep': smoothstep,
+    'step': step,
+    'min': Math.min,
+    'max': Math.max,
+    'mix': mix
 }
