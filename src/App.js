@@ -46,7 +46,7 @@ export function App() {
         }
     }
     function editDuration(d) {
-        setTime(Math.min(d, time))
+        lockTime(Math.min(d, lockedTime))
         setRunningShaderInfo({
             source: shaderSource,
             program: runningShaderInfo.program,
