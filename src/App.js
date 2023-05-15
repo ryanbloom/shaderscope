@@ -13,6 +13,7 @@ let initialSource = window.localStorage.getItem('code')
 if (!initialSource) {
     initialSource = defaultSource
 }
+const initialProgram = new Program(initialSource)
 
 export function App() {
     const [shaderSource, setShaderSource] = useState(initialSource)
@@ -26,8 +27,8 @@ export function App() {
 
     const [editing, setEditing] = useState(true)
     const [runningShaderInfo, setRunningShaderInfo] = useState({
-        source: shaderSource,
-        program: new Program(shaderSource),
+        source: initialSource,
+        program: initialProgram,
         duration: 5.0
     })
 
