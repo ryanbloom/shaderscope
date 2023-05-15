@@ -8,12 +8,20 @@ import { defaultDuration, defaultSource } from './options'
 import './app.css'
 
 import LogoImage from './logo.svg'
+import { ParseError } from './language/parser'
 
 let initialSource = window.localStorage.getItem('code')
 if (!initialSource) {
     initialSource = defaultSource
 }
-const initialProgram = new Program(initialSource)
+
+let initialProgram
+try {
+    initialProgram = new Program(initialSource)
+} catch (e) {
+    initialSource = defaultSource
+    initialProgram = new Program(initialSource)
+}
 
 export function App() {
     const [shaderSource, setShaderSource] = useState(initialSource)
@@ -24,6 +32,7 @@ export function App() {
     const [lockedVariable, lockVariable] = useState(null)
     const [hoveredTime, hoverTime] = useState(0)
     const [lockedTime, lockTime] = useState(0)
+    const [error, setError] = useState(null)
 
     const [editing, setEditing] = useState(true)
     const [runningShaderInfo, setRunningShaderInfo] = useState({
@@ -34,14 +43,22 @@ export function App() {
 
     function toggleEditor(e) {
         if (editing) {
-            setEditing(false)
-            setRunningShaderInfo({
-                source: shaderSource,
-                program: new Program(shaderSource),
-                duration: defaultDuration,
-                variable: 'result'
-            })
-            localStorage.setItem('code', shaderSource)
+            try {
+                const program = new Program(shaderSource)
+                setRunningShaderInfo({
+                    source: shaderSource,
+                    program: program,
+                    duration: defaultDuration,
+                    variable: 'result'
+                })
+                setError(null)
+                setEditing(false)
+                localStorage.setItem('code', shaderSource)
+            } catch (err) {
+                if (err instanceof ParseError) {
+                    setError(err)
+                }
+            }
         } else {
             setEditing(true)
         }
@@ -70,6 +87,7 @@ export function App() {
             hover={hoverVariable}
             lock={lockVariable}
             toggle={toggleEditor}
+            error={error}
         />
     }
     return <div>
@@ -92,7 +110,8 @@ export function App() {
                         hoveredPoint={hoveredPoint}
                         lockedPoint={lockedPoint}
                         hover={hoverPoint}
-                        lock={lockPoint} />
+                        lock={lockPoint}
+                        error={error} />
                     <Timeline
                         shader={runningShaderInfo}
                         variable={hoveredVariable || lockedVariable || 'result'}

@@ -1,5 +1,5 @@
 import { tokenize } from './lexer'
-import { parse, nodeType, ParseError } from './parser'
+import { parse, nodeType } from './parser'
 import { evaluate } from './evaluate'
 import { canvasSize } from '../options'
 
@@ -9,19 +9,8 @@ export class Program {
             source += '\n'
         }
         this.source = source
-        let tokens = tokenize(source)
-        // console.log('Tokens', tokens)
-        try {
-            let ast = parse(tokens)
-            // console.log('Tree', ast)
-            this.ast = ast
-        } catch (e) {
-            this.ast = []
-            console.log('Error', e)
-            if (e instanceof ParseError) {
-                alert(e.description())
-            }
-        }
+        const tokens = tokenize(source)
+        this.ast = parse(tokens) // Could throw ParseError
     }
 
     spans(time, coord) {

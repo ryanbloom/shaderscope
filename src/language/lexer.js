@@ -5,6 +5,13 @@ export const tokenType = {
     NEWLINE: 3
 }
 
+export const tokenTypeNames = [
+    'identifier',
+    'number',
+    'punctuation',
+    'newline'
+]
+
 class Token {
     constructor(type, text, start, end) {
         this.type = type

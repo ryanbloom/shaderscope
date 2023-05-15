@@ -1,4 +1,4 @@
-import { tokenType } from './lexer'
+import { tokenType, tokenTypeNames } from './lexer'
 
 export const nodeType = {
     IDENTIFIER: 0,
@@ -9,13 +9,23 @@ export const nodeType = {
     UNOP: 5
 }
 
+function lineNumberForToken(code, token) {
+    let line = 1
+    for (let i = 0; i < token.start; i++) {
+        if (code[i] == '\n') {
+            line++
+        }
+    }
+    return line
+}
+
 export class ParseError extends Error {
     constructor(message, token) {
         super(message)
         this.token = token
     }
-    description() {
-        return this.message + ` (token '${this.token.text}' from ${this.token.start} to ${this.token.end})`
+    description(code) {
+        return this.message + ` (token '${this.token.text}' on line ${lineNumberForToken(code, this.token)})`
     }
 }
 
@@ -26,13 +36,13 @@ export function parse(tokens) {
     function token(type, text) {
         if (tokens[i].type != type) {
             if (text) {
-                throw new ParseError(`Expected token type ${type} with text '${text}, got ${tokens[i].type}`, tokens[i])
+                throw new ParseError(`Expected ${tokenTypeNames[type]} "${text}", found ${tokenTypeNames[tokens[i].type]}`, tokens[i])
             } else {
-                throw new ParseError(`Expected token type ${type}, got ${tokens[i].type}`, tokens[i])
+                throw new ParseError(`Expected ${tokenTypeNames[type]}, found ${tokenTypeNames[tokens[i].type]}`, tokens[i])
             }
         }
         if (text && text != tokens[i].text) {
-            throw new ParseError(`Expected token with text '${text}', tokens[i])`)
+            throw new ParseError(`Expected token with text "${text}", found "${tokens[i]}"`)
         }
         i++
     }
