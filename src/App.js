@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Button } from './Button'
+import { Button, MenuLink } from './Button'
 import { CanvasPane } from './CanvasPane'
 import { Editor, Viewer } from './Editor'
 import { Timeline } from './Timeline'
@@ -93,6 +93,11 @@ export function App() {
     return <div>
         <div className='w-full h-20 flex flex-row items-center p-5'>
             <LogoImage />
+            <div className='flex flex-grow justify-end'>
+                <MenuLink href='https://github.com/ryanbloom/shaderscope'>
+                    GitHub
+                </MenuLink>
+            </div>
         </div>
         <div className='flex flex-row px-5'>
             <div className='pr-4 flex flex-col grow'>

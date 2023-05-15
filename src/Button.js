@@ -5,3 +5,9 @@ export function Button(props) {
         { props.children }
     </button>
 }
+
+export function MenuLink(props) {
+    return <a className='block rounded-md py-2 px-4 mx-2 hover:bg-slate-200 dark:hover:bg-slate-600' {...props}>
+        { props.children }
+    </a>
+}
