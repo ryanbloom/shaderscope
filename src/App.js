@@ -1,7 +1,7 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { Button, MenuLink } from './Button'
 import { CanvasPane } from './CanvasPane'
-import { Editor, Viewer } from './Editor'
+import { Editor } from './Editor'
 import { Timeline } from './Timeline'
 import { Program, UnknownIdentifierError } from './language'
 import { defaultDuration, defaultSource } from './options'
@@ -35,6 +35,25 @@ export function App() {
     const [lockedTime, lockTime] = useState(0)
     const [error, setError] = useState(null)
 
+    // Bit of a hack: when the cursor moves from one variable to another,
+    // it sends a mouseenter and mouseleave at the same time. We wait to
+    // see if this is happening and ignore the mouseleave so the new
+    // variable is displayed correctly.
+    const hoverOut = useRef()
+    function debouncedHover(varName) {
+        if (!varName) {
+            hoverOut.current = true
+            setTimeout(() => {
+                if (hoverOut.current) {
+                    hoverVariable(null)
+                }
+            }, 0)
+        } else {
+            hoverOut.current = false
+            hoverVariable(varName)
+        }
+    }
+
     const [editing, setEditing] = useState(true)
     const [runningShaderInfo, setRunningShaderInfo] = useState({
         source: initialSource,
@@ -67,6 +86,7 @@ export function App() {
             setEditing(true)
         }
     }
+
     function editDuration(d) {
         lockTime(Math.min(d, lockedTime))
         setRunningShaderInfo({
@@ -77,23 +97,6 @@ export function App() {
         })
     }
 
-    let codeComponent
-    if (editing) {
-        codeComponent = <Editor sourceCode={shaderSource}
-            toggle={toggleEditor}
-            onChange={e => setShaderSource(e.target.value)} />
-    } else {
-        codeComponent = <Viewer
-            shader={runningShaderInfo}
-            lockedVariable={lockedVariable}
-            time={hoveredTime || lockedTime}
-            point={hoveredPoint || lockedPoint}
-            hover={hoverVariable}
-            lock={lockVariable}
-            toggle={toggleEditor}
-            error={error}
-        />
-    }
     return <div>
         <div className='w-full h-20 flex flex-row items-center p-5'>
             <LogoImage />
@@ -105,7 +108,17 @@ export function App() {
         </div>
         <div className='flex flex-row px-5'>
             <div className='pr-4 flex flex-col grow'>
-                {codeComponent}
+                <Editor sourceCode={shaderSource}
+                    editable={editing}
+                    shader={runningShaderInfo}
+                    lockedVariable={lockedVariable}
+                    time={hoveredTime || lockedTime}
+                    point={hoveredPoint || lockedPoint}
+                    hover={debouncedHover}
+                    lock={lockVariable}
+                    toggle={toggleEditor}
+                    error={error}
+                    onChange={setShaderSource} />
                 <Button onClick={toggleEditor}>
                     {editing ? 'Run' : 'Edit'}
                 </Button>

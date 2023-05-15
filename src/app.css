@@ -3,6 +3,9 @@
 
 html {
     --light-code: #888;
+    --span-bg: rgb(240, 240, 240);
+    --span-var-hover-bg: #ddd;
+    --span-var-active-bg: rgb(191 219 254); /* blue-200 */
     --code-font: 'Fira Code', monospace;
     --fg: #0F172A;
     --bg: white;
@@ -14,11 +17,27 @@ body {
     user-select: none;
 }
 
-textarea {
+.cm-editor .cm-scroller {
+    line-height: 1.6;
+}
+
+.cm-editor .cm-content {
     font-family: var(--code-font);
+    font-size: 14px;
+}
+
+.readonly .cm-activeLine, .readonly .cm-activeLineGutter {
+    background: transparent !important;
+}
+
+.cm-editor .cm-gutters {
     background: none;
-    resize: none;
-    line-height: 1.85;
+    border: none;
+}
+
+.ͼ4 .cm-line {
+    display: flex;
+    flex-direction: row;
 }
 
 input {
@@ -34,20 +53,17 @@ code, .code {
 .span-default {
     flex-grow: 1;
 }
-.span-variable {
-    border: solid #ccc 2px;
-    border-radius: 4px;
+.span-var {
+    background: var(--span-bg);
     cursor: default;
 }
-.span-variable:hover {
-    border-color: #aaa;
-}
-.span-variable-active, .span-variable-active:hover {
-    border: solid black 2px;
+
+.span-var:hover {
+    background: var(--span-var-hover-bg)
 }
 .span-value {
     color: var(--light-code);
-    width: 4em;
+    flex-grow: 1;
     text-align: right;
 }
 
@@ -57,14 +73,11 @@ code, .code {
     html {
         --fg: white;
         --bg: black;
+        --span-bg: rgb(61, 64, 71);
+        --span-var-hover-bg: rgb(81, 84, 91);
+        --span-var-active-bg: rgb(37 99 235); /* blue-600 */
     }
-    .span-variable {
-        border-color: #666;
-    }
-    .span-variable:hover {
-        border-color: #aaa;
-    }
-    .span-variable-active, .span-variable-active:hover {
-        border-color: #fff;
+    .span-var-active, .span-var-active:hover {
+        color: white;
     }
 }

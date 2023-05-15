@@ -51,6 +51,30 @@ export class Program {
         }
     }
 
+    evaluateVariables(time, coord) {
+        let symbols = null
+        if (coord) {
+            symbols = {
+                t: time,
+                x: coord.x,
+                y: coord.y,
+                width: canvasSize,
+                height: canvasSize,
+                pi: Math.PI,
+                tau: 2*Math.PI
+            }
+        }
+        for (let statement of this.ast) {
+            if (statement.type == nodeType.ASSIGNMENT) {
+                let val = symbols ? evaluate(statement.value, symbols) : null
+                if (symbols) {
+                    symbols[statement.identifier.text] = val
+                }
+            }
+        }
+        return symbols
+    }
+
     spans(time, coord) {
         let symbols = null
         if (coord) {

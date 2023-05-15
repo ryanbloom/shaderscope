@@ -21,22 +21,26 @@ export function CanvasPane(props) {
             props.lock(point)
         }
     }
-    function getSource() {
-        return props.shader.program.compile(props.variable)
-    }
-
+    
     let errorDiv = props.error
-        ? <div className='font-mono error absolute p-4 text-white bg-black/80 w-full h-full'>
+    ? <div className='code error absolute p-4 text-white bg-black/80 w-full h-full'>
             {props.error.description(props.shader.source)}
         </div>
         : []
-
-    let crosshairsDiv = props.lockedPoint
+        
+        let crosshairsDiv = props.lockedPoint
         ? <div style={{ 'left': props.lockedPoint.x - crosshairsSize / 2, 'top': flipY(props.lockedPoint.y) - crosshairsSize / 2 }}
-            className='pointer-events-none absolute mix-blend-difference'>
+        className='pointer-events-none absolute mix-blend-difference'>
             <CrosshairsImage />
         </div>
         : []
+        
+    const source = props.shader.program.compile(props.variable)
+    const inputs = {
+        iTime: props.time,
+        width: canvasSize,
+        height: canvasSize,
+    }
 
     return <div>
         <div style={{ width: canvasSize, height: canvasSize }}>
@@ -49,7 +53,11 @@ export function CanvasPane(props) {
                 onDoubleClick={() => props.lock(null)}>
                 {errorDiv}
                 {crosshairsDiv}
-                <Canvas width={canvasSize} height={canvasSize} shaderInputs={{ iTime: props.time, width: canvasSize, height: canvasSize }} fragmentSource={getSource()} />
+                <Canvas
+                    width={canvasSize}
+                    height={canvasSize}
+                    shaderInputs={inputs}
+                    fragmentSource={source} />
             </div>
         </div>
     </div>
