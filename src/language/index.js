@@ -1,7 +1,39 @@
 import { tokenize } from './lexer'
 import { parse, nodeType } from './parser'
 import { evaluate } from './evaluate'
+import builtins from './builtins'
 import { canvasSize } from '../options'
+
+export class UnknownIdentifierError extends Error {
+    constructor(node) {
+        super(`Unknown function "${node.name}"`)
+        this.identifier = node.name
+    }
+    description(code) {
+        return this.message
+    }
+}
+
+function validateNode(node) {
+    if (node.type == nodeType.ASSIGNMENT) {
+        validateNode(node.value)
+    }
+    if (node.type == nodeType.BINOP) {
+        validateNode(node.left)
+        validateNode(node.right)
+    }
+    if (node.type == nodeType.UNOP) {
+        validateNode(node.operand)
+    }
+    if (node.type == nodeType.FUNCTION) {
+        if (!(node.name in builtins)) {
+            throw new UnknownIdentifierError(node)
+        }
+        for (let arg of node.args) {
+            validateNode(arg)
+        }
+    }
+}
 
 export class Program {
     constructor(source) {
@@ -11,6 +43,12 @@ export class Program {
         this.source = source
         const tokens = tokenize(source)
         this.ast = parse(tokens) // Could throw ParseError
+    }
+
+    validate() {
+        for (let statement of this.ast) {
+            validateNode(statement)
+        }
     }
 
     spans(time, coord) {
@@ -64,7 +102,7 @@ export class Program {
                     return this.printGLSL(statement) + ';'
                 } else {
                     known.push(statement.identifier.text)
-                    return 'float ' + statement.identifier.text + ' = ' + this.printGLSL(statement.value) + ';'
+                    return `float ${statement.identifier.text} = ${this.printGLSL(statement.value)};`
                 }
             }
             return ''
@@ -77,8 +115,8 @@ export class Program {
         uniform float width;
         uniform float height;
 
-        float pi = 3.1415926535;
-        float tau = 6.2831853072;
+        float pi = ${Math.PI};
+        float tau = ${2*Math.PI};
         
         void main(void) {
             ${initializers}

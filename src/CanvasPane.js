@@ -26,7 +26,9 @@ export function CanvasPane(props) {
     }
 
     let errorDiv = props.error
-        ? <div className='font-mono error absolute p-4 bg-black/80 w-full h-full'>{props.error.description(props.shader.source)}</div>
+        ? <div className='font-mono error absolute p-4 text-white bg-black/80 w-full h-full'>
+            {props.error.description(props.shader.source)}
+        </div>
         : []
 
     let crosshairsDiv = props.lockedPoint
@@ -35,10 +37,10 @@ export function CanvasPane(props) {
             <CrosshairsImage />
         </div>
         : []
-        
+
     return <div>
         <div style={{ width: canvasSize, height: canvasSize }}>
-            
+
             <div className='rounded-md outline outline-2 outline-slate-200 dark:outline-slate-600 overflow-hidden'
                 style={{ position: 'absolute' }}
                 onMouseDown={moveCrossHairs}

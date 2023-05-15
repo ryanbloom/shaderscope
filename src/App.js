@@ -3,7 +3,7 @@ import { Button, MenuLink } from './Button'
 import { CanvasPane } from './CanvasPane'
 import { Editor, Viewer } from './Editor'
 import { Timeline } from './Timeline'
-import { Program } from './language'
+import { Program, UnknownIdentifierError } from './language'
 import { defaultDuration, defaultSource } from './options'
 import './app.css'
 
@@ -18,6 +18,7 @@ if (!initialSource) {
 let initialProgram
 try {
     initialProgram = new Program(initialSource)
+    initialProgram.validate()
 } catch (e) {
     initialSource = defaultSource
     initialProgram = new Program(initialSource)
@@ -45,6 +46,7 @@ export function App() {
         if (editing) {
             try {
                 const program = new Program(shaderSource)
+                program.validate()
                 setRunningShaderInfo({
                     source: shaderSource,
                     program: program,
@@ -56,6 +58,8 @@ export function App() {
                 localStorage.setItem('code', shaderSource)
             } catch (err) {
                 if (err instanceof ParseError) {
+                    setError(err)
+                } else if (err instanceof UnknownIdentifierError) {
                     setError(err)
                 }
             }
