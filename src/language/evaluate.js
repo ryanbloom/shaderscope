@@ -13,7 +13,9 @@ export function evaluate(node, symtab) {
             case '/':
                 return evaluate(node.left, symtab) / evaluate(node.right, symtab)
             case '^':
-                return Math.pow(evaluate(node.left, symtab), evaluate(node.right, symtab))
+                // The absolute value isn't technically correct, but it's what we want
+                // in most cases and prevents errors.
+                return Math.pow(Math.abs(evaluate(node.left, symtab)), evaluate(node.right, symtab))
         }
     }
     if (node.type == nodeType.UNOP) {
