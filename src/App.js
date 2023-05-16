@@ -61,27 +61,31 @@ export function App() {
         duration: 5.0
     })
 
+    function run(source) {
+        try {
+            const program = new Program(source)
+            program.validate()
+            setRunningShaderInfo({
+                source: source,
+                program: program,
+                duration: defaultDuration,
+                variable: 'result'
+            })
+            setError(null)
+            localStorage.setItem('code', source)
+        } catch (err) {
+            if (err instanceof ParseError) {
+                setError(err)
+            } else if (err instanceof UnknownIdentifierError) {
+                setError(err)
+            }
+        }
+    }
+
     function toggleEditor(e) {
         if (editing) {
-            try {
-                const program = new Program(shaderSource)
-                program.validate()
-                setRunningShaderInfo({
-                    source: shaderSource,
-                    program: program,
-                    duration: defaultDuration,
-                    variable: 'result'
-                })
-                setError(null)
-                setEditing(false)
-                localStorage.setItem('code', shaderSource)
-            } catch (err) {
-                if (err instanceof ParseError) {
-                    setError(err)
-                } else if (err instanceof UnknownIdentifierError) {
-                    setError(err)
-                }
-            }
+            setEditing(false)
+            run()
         } else {
             setEditing(true)
         }
@@ -95,6 +99,13 @@ export function App() {
             duration: d,
             variable: runningShaderInfo.variable
         })
+    }
+
+    function changeHandler(s) {
+        if (!editing) {
+            run(s)
+        }
+        setShaderSource(s)
     }
 
     return <div>
@@ -118,7 +129,7 @@ export function App() {
                     lock={lockVariable}
                     toggle={toggleEditor}
                     error={error}
-                    onChange={setShaderSource} />
+                    onChange={changeHandler} />
                 <Button onClick={toggleEditor}>
                     {editing ? 'Run' : 'Edit'}
                 </Button>

@@ -57,14 +57,26 @@ code, .code {
     background: var(--span-bg);
     cursor: default;
 }
-
 .span-var:hover {
     background: var(--span-var-hover-bg)
+}
+.span-var-active, .span-var-active:hover {
+    background: var(--span-var-active-bg);
 }
 .span-value {
     color: var(--light-code);
     flex-grow: 1;
     text-align: right;
+}
+.span-literal {
+    pointer-events: auto;
+    cursor: ew-resize;
+
+    text-decoration-line: underline;
+    text-decoration-style: dotted;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 3px;
+    text-decoration-color: gray;
 }
 
 /* Dark mode */

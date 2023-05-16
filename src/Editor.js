@@ -16,16 +16,11 @@ export function Editor(props) {
             props.toggle()
         }
     }
-    const extension = variableWidgets(
-        props.shader.program.evaluateVariables(props.time, props.point),
-        props.lockedVariable,
-        { lock: props.lock, hover: props.hover }
-    )
     return <div className={`flex-grow ${props.editable ? '' : 'readonly'}`} style={{ pointerEvents: props.editable ? 'auto' : 'none' }}>
         <CodeMirror
             value={props.sourceCode}
             editable={props.editable}
-            extensions={props.editable ? [] : [extension]}
+            extensions={props.editable ? [] : [variableWidgets(props)]}
             fontSize={16}
             height="500px"
             onKeyDown={keyPress}

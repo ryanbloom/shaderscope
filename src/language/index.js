@@ -35,6 +35,21 @@ function validateNode(node) {
     }
 }
 
+export function filterChildren(node, type) {
+    switch (node.type) {
+        case nodeType.ASSIGNMENT:
+            return filterChildren(node.value, type)
+        case nodeType.BINOP:
+            return filterChildren(node.left, type).concat(filterChildren(node.right, type))
+        case nodeType.UNOP:
+            return filterChildren(node.operand, type)
+        case nodeType.FUNCTION:
+            return node.args.map(arg => filterChildren(arg, type)).flat()
+        default:
+            return node.type == type ? [node] : []
+    }
+}
+
 export class Program {
     constructor(source) {
         if (source[source.length - 1] != '\n') {
@@ -73,46 +88,6 @@ export class Program {
             }
         }
         return symbols
-    }
-
-    spans(time, coord) {
-        let symbols = null
-        if (coord) {
-            symbols = {
-                t: time,
-                x: coord.x,
-                y: coord.y,
-                width: canvasSize,
-                height: canvasSize,
-                pi: Math.PI,
-                tau: 2*Math.PI
-            }
-        }
-        let results = []
-        for (let statement of this.ast) {
-            if (statement.type == nodeType.ASSIGNMENT) {
-                let val = symbols ? evaluate(statement.value, symbols) : null
-                let line = []
-                line.push({
-                    type: 'variable',
-                    text: this.source.slice(statement.identifier.start, statement.identifier.end),
-                    value: val
-                })
-                line.push({
-                    type: 'default',
-                    text: this.source.slice(statement.identifier.end, statement.end)
-                })
-                line.push({
-                    type: 'value',
-                    value: val
-                })
-                results.push(line)
-                if (symbols) {
-                    symbols[statement.identifier.text] = val
-                }
-            }
-        }
-        return results
     }
     
     compileInner(output, initializers) {
