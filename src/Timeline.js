@@ -25,10 +25,6 @@ export function Timeline(props) {
         }
     }, [])
 
-    function timecode() {
-        return String(Math.floor(props.lockedTime))
-    }
-
     function play() {
         setPlaying(true)
         lastRender.current = Date.now()
@@ -38,14 +34,6 @@ export function Timeline(props) {
     function pause() {
         setPlaying(false)
         cancelAnimationFrame(animationFrame.current)
-    }
-
-    function playPause() {
-        if (!playing) {
-            play()
-        } else {
-            pause()
-        }
     }
 
     function step() {
@@ -99,34 +87,49 @@ export function Timeline(props) {
         props.editDuration(duration)
     }
 
-    let backgroundColoring = props.point
-        ? <Canvas
-            width={timelineCanvasWidth} height={timelineHeight} fragmentSource={getShader()}
-            shaderInputs={{ fixedX: props.point.x, fixedY: props.point.y, width: canvasSize, height: canvasSize }} />
-        : []
-    let backgroundContainer = <div className='w-full overflow-hidden bg-slate-200 dark:bg-slate-600 outline outline-2 outline-slate-200 dark:outline-slate-600'
-        style={{ height: timelineHeight, borderRadius: timelineHeight/2 }} ref={timelineContainerRef}>
-        {backgroundColoring}
-    </div>
-    let playPauseIcon = playing ? <PauseRounded /> : <PlayArrowRounded />
     return <div className='flex flex-row items-center'>
-        <Button onClick={playPause}>
-            {playPauseIcon}
+        <Button onClick={playing ? pause : play}>
+            {playing ? <PauseRounded /> : <PlayArrowRounded />}
         </Button>
 
-        <div className='code cursor-default text-annotation text-center w-12'>{timecode()}</div>
+        <div className='code cursor-default text-annotation text-center w-12'>
+            {String(Math.floor(props.lockedTime))}
+        </div>
 
         <div className='grow flex flex-row items-center'
             style={{ height: 50 }}
             onMouseDown={changeTime}
             onMouseMove={changeTime}
             onMouseOut={() => props.hover(null)}>
+
+            {/* Playhead */}
             <div style={{ position: 'absolute', width: 0, height: playheadHeight }}>
                 <div style={{ left: xForTime(props.lockedTime) }}
                     className='pointer-events-none w-1 rounded h-full bg-black dark:bg-white absolute'>
                 </div>
             </div>
-            {backgroundContainer}
+
+            {/* Background */}
+            <div
+                className='w-full overflow-hidden bg-slate-200 dark:bg-slate-600 outline outline-2 outline-slate-200 dark:outline-slate-600'
+                style={{ height: timelineHeight, borderRadius: timelineHeight / 2 }}
+                ref={timelineContainerRef}>
+                {
+                    props.point
+                        ? <Canvas
+                            width={timelineCanvasWidth}
+                            height={timelineHeight}
+                            fragmentSource={getShader()}
+                            shaderInputs={{
+                                fixedX: props.point.x,
+                                fixedY: props.point.y,
+                                width: canvasSize,
+                                height: canvasSize,
+                                ...props.shader.literals
+                            }} />
+                        : []
+                }
+            </div>
         </div>
 
         <input type='text' className='code text-annotation text-center w-12'

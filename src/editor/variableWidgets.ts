@@ -2,7 +2,7 @@ import { Extension, RangeSetBuilder } from '@codemirror/state'
 import { EditorView, Decoration, ViewPlugin, DecorationSet, ViewUpdate, WidgetType } from '@codemirror/view'
 import { Program, filterChildren } from '../language'
 import { nodeType } from '../language/parser'
-import { draggingSpeed } from '../options'
+import { draggingSpeed, nameLiteral } from '../options'
 
 class VarWidget extends WidgetType {
     name: string
@@ -49,18 +49,22 @@ class ValueWidget extends WidgetType {
 }
 
 class LiteralWidget extends WidgetType {
+    index: number
     value: number
     start: number
     end: number
-    handler: any
+    slideHandler: any
+    recompileHandler: any
     dragging: boolean = false
 
-    constructor(value: number, start: number, end: number, recompileHandler: any) {
+    constructor(index: number, value: number, start: number, end: number, slideHandler: any, recompileHandler: any) {
         super()
+        this.index = index
         this.value = value
         this.start = start
         this.end = end
-        this.handler = recompileHandler
+        this.slideHandler = slideHandler
+        this.recompileHandler = recompileHandler
     }
 
     toDOM(view: EditorView) {
@@ -81,15 +85,21 @@ class LiteralWidget extends WidgetType {
                     insert: this.value.toFixed(2)
                 }
             })
-            this.handler(view.state.doc.toString())
+            this.recompileHandler(view.state.doc.toString())
         }
         span.onmousemove = e => {
             if (e.buttons && this.dragging) {
                 this.value += e.movementX / view.defaultCharacterWidth * draggingSpeed
                 span.innerText = this.value.toFixed(2)
+                this.slideHandler(this.index, this.value)
             }
         }
         return span
+    }
+
+    updateDOM(dom: HTMLElement, view: EditorView): boolean {
+        // We already updated it in the drag handler
+        return true
     }
 }
 
@@ -111,6 +121,7 @@ export function variableWidgets(props): Extension {
                 const values = props.shader.program.evaluateVariables(props.time, props.point)
                 try {
                     const program = new Program(text)
+                    let literalIndex = 0
 
                     for (const statement of program.ast) {
                         const line = text.slice(statement.start, statement.end)
@@ -130,9 +141,10 @@ export function variableWidgets(props): Extension {
                         const literals = filterChildren(statement, nodeType.NUMBER)
                         for (const literal of literals) {
                             const literalDecoration = Decoration.widget({
-                                widget: new LiteralWidget(literal.value, literal.start, literal.end, props.onChange)
+                                widget: new LiteralWidget(literalIndex, props.shader.literals[nameLiteral(literalIndex)], literal.start, literal.end, props.onSlide, props.onChange)
                             })
                             builder.add(literal.start, literal.end, literalDecoration)
+                            literalIndex += 1
                         }
 
                         // Value widget

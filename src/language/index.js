@@ -2,7 +2,7 @@ import { tokenize } from './lexer'
 import { parse, nodeType } from './parser'
 import { evaluate } from './evaluate'
 import builtins from './builtins'
-import { canvasSize } from '../options'
+import { canvasSize, nameLiteral } from '../options'
 
 export class UnknownIdentifierError extends Error {
     constructor(node) {
@@ -36,6 +36,9 @@ function validateNode(node) {
 }
 
 export function filterChildren(node, type) {
+    if (Array.isArray(node)) {
+        return node.map(child => filterChildren(child, type)).flat()
+    }
     switch (node.type) {
         case nodeType.ASSIGNMENT:
             return filterChildren(node.value, type)
@@ -66,6 +69,15 @@ export class Program {
         }
     }
 
+    getLiteralValues() {
+        const literals = {}
+        const children = filterChildren(this.ast, nodeType.NUMBER)
+        for (const [index, literal] of children.entries()) {
+            literals[`_literal${index}`] = literal.value
+        }
+        return literals
+    }
+
     evaluateVariables(time, coord) {
         if (!coord) {
             return null
@@ -77,7 +89,7 @@ export class Program {
             width: canvasSize,
             height: canvasSize,
             pi: Math.PI,
-            tau: 2*Math.PI
+            tau: 2 * Math.PI
         }
         for (let statement of this.ast) {
             if (statement.type == nodeType.ASSIGNMENT) {
@@ -86,7 +98,7 @@ export class Program {
         }
         return symbols
     }
-    
+
     compileInner(output, initializers) {
         if (!output) {
             output = 'result'
@@ -103,7 +115,11 @@ export class Program {
             }
             return ''
         })
-    
+
+        const literalDeclarations = filterChildren(this.ast, nodeType.NUMBER)
+            .map((_, i) => `uniform float ${nameLiteral(i)};`)
+            .join('\n')
+
         const glCode = `precision mediump float;
         uniform float iTime;
         uniform float fixedX;
@@ -111,8 +127,10 @@ export class Program {
         uniform float width;
         uniform float height;
 
+        ${literalDeclarations}
+
         float pi = ${Math.PI};
-        float tau = ${2*Math.PI};
+        float tau = ${2 * Math.PI};
         
         void main(void) {
             ${initializers}
@@ -120,22 +138,21 @@ export class Program {
             float green = 0.0;
             float blue = 0.0;
             ${lines.join('\n')}
-            ${
-                output == 'result'
+            ${output == 'result'
                 ? 'gl_FragColor = vec4(red, green, blue, 1.0);'
                 : `gl_FragColor = vec4(${output}, ${output}, ${output}, 1.0);`
             }
         }`
         return glCode
     }
-    
+
     compileTimeline(output, scale) {
         let initializers = `float x = fixedX;
         float y = fixedY;
         float t = gl_FragCoord.x * ${scale};`
         return this.compileInner(output, initializers)
     }
-    
+
     compile(output) {
         let initializers = `float x = gl_FragCoord.x;
         float y = gl_FragCoord.y;
@@ -157,10 +174,10 @@ export class Program {
             case nodeType.FUNCTION:
                 return node.name + '(' + node.args.map(this.printGLSL.bind(this)).join(',') + ')'
             case nodeType.NUMBER:
-                return node.value.toFixed(8)
+                return nameLiteral(node.index)
             default:
                 return this.source.slice(node.start, node.end)
         }
     }
-    
+
 }

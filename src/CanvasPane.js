@@ -4,8 +4,6 @@ import { canvasSize, crosshairsSize } from './options'
 import CrosshairsImage from './crosshairs-small.svg'
 
 export function CanvasPane(props) {
-    [dragging, setDragging] = useState(false)
-
     function flipY(y) {
         return canvasSize - y
     }
@@ -40,6 +38,7 @@ export function CanvasPane(props) {
         iTime: props.time,
         width: canvasSize,
         height: canvasSize,
+        ...props.shader.literals
     }
 
     return <div>

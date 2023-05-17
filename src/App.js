@@ -4,7 +4,7 @@ import { CanvasPane } from './CanvasPane'
 import { Editor } from './Editor'
 import { Timeline } from './Timeline'
 import { Program, UnknownIdentifierError } from './language'
-import { defaultDuration, defaultSource } from './options'
+import { nameLiteral, defaultSource } from './options'
 import './app.css'
 
 import LogoImage from './logo.svg'
@@ -53,7 +53,7 @@ export function App() {
             hoverVariable(varName)
         }
     }
-
+    
     const [editing, setEditing] = useState(true)
     const [runningShaderInfo, setRunningShaderInfo] = useState({
         source: initialSource,
@@ -68,6 +68,7 @@ export function App() {
             setRunningShaderInfo({
                 source: source,
                 program: program,
+                literals: program.getLiteralValues(),
                 duration: runningShaderInfo.duration,
                 variable: 'result'
             })
@@ -96,7 +97,21 @@ export function App() {
         setRunningShaderInfo({
             source: shaderSource,
             program: runningShaderInfo.program,
+            literals: runningShaderInfo.literals,
             duration: d,
+            variable: runningShaderInfo.variable
+        })
+    }
+
+    function slideHandler(i, x) {
+        const name = nameLiteral(i)
+        const literals = runningShaderInfo.literals
+        literals[name] = x
+        setRunningShaderInfo({
+            source: runningShaderInfo.source,
+            program: runningShaderInfo.program,
+            literals: literals,
+            duration: runningShaderInfo.duration,
             variable: runningShaderInfo.variable
         })
     }
@@ -129,6 +144,7 @@ export function App() {
                     lock={lockVariable}
                     toggle={toggleEditor}
                     error={error}
+                    onSlide={slideHandler}
                     onChange={changeHandler} />
                 <Button onClick={toggleEditor}>
                     {editing ? 'Run' : 'Edit'}

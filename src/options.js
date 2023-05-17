@@ -4,6 +4,7 @@ export const timelineHeight = 14
 export const playheadHeight = 30
 export const defaultDuration = 5.0
 export const draggingSpeed = 1/5
+export const nameLiteral = n => `_literal${n}`
 export const defaultSource = `rRadius = 0.5 + 0.3*sin(t)
 gRadius = 0.5 + 0.3*sin(t+tau/3)
 bRadius = 0.5 + 0.3*sin(t+2*tau/3)

@@ -31,6 +31,7 @@ export class ParseError extends Error {
 
 export function parse(tokens) {
     let i = 0
+    let literalIndex = 0
     let end = tokens.length
 
     function token(type, text) {
@@ -78,12 +79,14 @@ export function parse(tokens) {
                 type: nodeType.NUMBER,
                 value: Number(tokens[i].text),
                 start: tokens[i].start,
-                end: tokens[i].end
+                end: tokens[i].end,
+                index: literalIndex
             }
             i += 1
+            literalIndex += 1
             return t
         }
-        if (tokens[i].type == tokenType.IDENTIFIER && tokens[i+1].text == '(') {
+        if (tokens[i].type == tokenType.IDENTIFIER && tokens[i + 1].text == '(') {
             // Function call
             let s = tokens[i].start
             let id = tokens[i].text
@@ -110,14 +113,26 @@ export function parse(tokens) {
 
     function unary() {
         if (match(tokenType.PUNCTUATION, '-')) {
-            const operation = tokens[i-1]
+            const operation = tokens[i - 1]
             const operand = unary()
-            return {
-                type: nodeType.UNOP,
-                operation: operation.text,
-                operand: operand,
-                start: operation.start,
-                end: operand.end
+            if (operand.type == nodeType.NUMBER) {
+                // Parse as a negative number, rather than the negation of a positive
+                // number. This is required for the literal sliders work correctly.
+                return {
+                    type: nodeType.NUMBER,
+                    value: -1 * operand.value,
+                    start: operation.start,
+                    end: operand.end,
+                    index: operand.index
+                }
+            } else {
+                return {
+                    type: nodeType.UNOP,
+                    operation: operation.text,
+                    operand: operand,
+                    start: operation.start,
+                    end: operand.end
+                }
             }
         }
         return primary()
@@ -132,10 +147,10 @@ export function parse(tokens) {
     }
 
     function leftAssociativeBinOpParser(ops, lower) {
-        return function() {
+        return function () {
             let exp = lower()
             while (matchAny(tokenType.PUNCTUATION, ops)) {
-                let op = tokens[i-1]
+                let op = tokens[i - 1]
                 let f2 = lower()
                 exp = {
                     type: nodeType.BINOP,
