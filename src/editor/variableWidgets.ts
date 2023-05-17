@@ -72,10 +72,12 @@ class LiteralWidget extends WidgetType {
         span.className = 'span-literal'
         span.innerText = this.value.toFixed(2)
         span.onmousedown = e => {
+            span.className = 'span-literal span-literal-active'
             span.requestPointerLock()
             this.dragging = true
         }
         span.onmouseup = e => {
+            span.className = 'span-literal'
             document.exitPointerLock()
             this.dragging = false
             view.dispatch({

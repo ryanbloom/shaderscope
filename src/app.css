@@ -76,7 +76,10 @@ code, .code {
     text-decoration-style: dotted;
     text-decoration-thickness: 2px;
     text-underline-offset: 3px;
-    text-decoration-color: gray;
+    text-decoration-color: #999;
+}
+.span-literal.span-literal-active {
+    text-decoration-color: black;
 }
 
 /* Dark mode */
