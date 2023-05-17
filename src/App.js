@@ -68,7 +68,7 @@ export function App() {
             setRunningShaderInfo({
                 source: source,
                 program: program,
-                duration: defaultDuration,
+                duration: runningShaderInfo.duration,
                 variable: 'result'
             })
             setError(null)
@@ -85,7 +85,7 @@ export function App() {
     function toggleEditor(e) {
         if (editing) {
             setEditing(false)
-            run()
+            run(shaderSource)
         } else {
             setEditing(true)
         }
