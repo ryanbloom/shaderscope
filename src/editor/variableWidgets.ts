@@ -55,7 +55,6 @@ class LiteralWidget extends WidgetType {
     end: number
     slideHandler: any
     recompileHandler: any
-    dragging: boolean = false
 
     constructor(index: number, value: number, start: number, end: number, slideHandler: any, recompileHandler: any) {
         super()
@@ -74,12 +73,17 @@ class LiteralWidget extends WidgetType {
         span.onmousedown = e => {
             span.className = 'span-literal span-literal-active'
             span.requestPointerLock()
-            this.dragging = true
+        }
+        span.onmousemove = e => {
+            if (document.pointerLockElement) {
+                this.value += e.movementX / view.defaultCharacterWidth * draggingSpeed
+                span.innerText = this.value.toFixed(2)
+                this.slideHandler(this.index, this.value)
+            }
         }
         span.onmouseup = e => {
             span.className = 'span-literal'
             document.exitPointerLock()
-            this.dragging = false
             view.dispatch({
                 changes: {
                     from: this.start,
@@ -89,19 +93,14 @@ class LiteralWidget extends WidgetType {
             })
             this.recompileHandler(view.state.doc.toString())
         }
-        span.onmousemove = e => {
-            if (e.buttons && this.dragging) {
-                this.value += e.movementX / view.defaultCharacterWidth * draggingSpeed
-                span.innerText = this.value.toFixed(2)
-                this.slideHandler(this.index, this.value)
-            }
-        }
         return span
     }
 
     updateDOM(dom: HTMLElement, view: EditorView): boolean {
-        // We already updated it in the drag handler
-        return true
+        if (document.pointerLockElement) {
+            return true
+        }
+        return false
     }
 }
 
