@@ -21,7 +21,20 @@ function mix(x, y, a) {
     return x * (1 - a) + y * a
 }
 
-export default {
+export const predefinedVariables = [
+    't',
+    'x', 
+    'y',
+    'red',
+    'green',
+    'blue',
+    'width',
+    'height',
+    'pi',
+    'tau'
+]
+
+export const builtins = {
     'sin': Math.sin,
     'cos': Math.cos,
     'tan': Math.tan,

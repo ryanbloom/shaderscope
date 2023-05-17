@@ -1,5 +1,5 @@
 import { nodeType } from './parser'
-import builtins from './builtins'
+import { builtins } from './builtins'
 
 export function evaluate(node, symtab) {
     if (node.type == nodeType.BINOP) {
@@ -36,10 +36,10 @@ export function evaluate(node, symtab) {
         return 0
     }
     if (node.type == nodeType.IDENTIFIER) {
-        if (node.text in symtab) {
-            return symtab[node.text]
+        if (node.name in symtab) {
+            return symtab[node.name]
         }
-        console.log(`Unknown variable ${node.text}`)
+        console.log(`Unknown variable ${node.name}`)
         return 0
     }
     console.log(`Unrecognized node of type ${node.type}`)

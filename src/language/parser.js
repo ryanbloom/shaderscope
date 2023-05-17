@@ -9,9 +9,18 @@ export const nodeType = {
     UNOP: 5
 }
 
-function lineNumberForToken(code, token) {
+export const nodeTypeNames = [
+    'variable',
+    'number',
+    'operation',
+    'assignment',
+    'function',
+    'operation'
+]
+
+export function lineNumberFor(code, loc) {
     let line = 1
-    for (let i = 0; i < token.start; i++) {
+    for (let i = 0; i < loc; i++) {
         if (code[i] == '\n') {
             line++
         }
@@ -25,7 +34,7 @@ export class ParseError extends Error {
         this.token = token
     }
     description(code) {
-        return this.message + ` (token '${this.token.text}' on line ${lineNumberForToken(code, this.token)})`
+        return this.message + ` (line ${lineNumberFor(code, this.token.start)})`
     }
 }
 
@@ -37,9 +46,9 @@ export function parse(tokens) {
     function token(type, text) {
         if (tokens[i].type != type) {
             if (text) {
-                throw new ParseError(`Expected ${tokenTypeNames[type]} "${text}", found ${tokenTypeNames[tokens[i].type]}`, tokens[i])
+                throw new ParseError(`Expected ${tokenTypeNames[type]} "${text}", found ${tokenTypeNames[tokens[i].type]} "${tokens[i].text}"`, tokens[i])
             } else {
-                throw new ParseError(`Expected ${tokenTypeNames[type]}, found ${tokenTypeNames[tokens[i].type]}`, tokens[i])
+                throw new ParseError(`Expected ${tokenTypeNames[type]}, found ${tokenTypeNames[tokens[i].type]} "${tokens[i].text}"`, tokens[i])
             }
         }
         if (text && text != tokens[i].text) {
@@ -51,7 +60,7 @@ export function parse(tokens) {
     function identifier() {
         let node = {
             type: nodeType.IDENTIFIER,
-            text: tokens[i].text,
+            name: tokens[i].text,
             start: tokens[i].start,
             end: tokens[i].end
         }

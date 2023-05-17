@@ -1,37 +1,41 @@
 import { tokenize } from './lexer'
-import { parse, nodeType } from './parser'
+import { parse, nodeType, nodeTypeNames, lineNumberFor } from './parser'
 import { evaluate } from './evaluate'
-import builtins from './builtins'
+import { builtins, predefinedVariables } from './builtins'
 import { canvasSize, nameLiteral } from '../options'
 
 export class UnknownIdentifierError extends Error {
     constructor(node) {
-        super(`Unknown function "${node.name}"`)
-        this.identifier = node.name
+        super(`Undefined ${nodeTypeNames[node.type]} "${node.name}"`)
+        this.node = node
     }
     description(code) {
-        return this.message
+        return this.message + ` (line ${lineNumberFor(code, this.node.start)})`
     }
 }
 
-function validateNode(node) {
-    if (node.type == nodeType.ASSIGNMENT) {
-        validateNode(node.value)
-    }
-    if (node.type == nodeType.BINOP) {
-        validateNode(node.left)
-        validateNode(node.right)
-    }
-    if (node.type == nodeType.UNOP) {
-        validateNode(node.operand)
-    }
-    if (node.type == nodeType.FUNCTION) {
-        if (!(node.name in builtins)) {
-            throw new UnknownIdentifierError(node)
-        }
-        for (let arg of node.args) {
-            validateNode(arg)
-        }
+function validateNode(node, known) {
+    switch (node.type) {
+        case nodeType.BINOP:
+            validateNode(node.left, known)
+            validateNode(node.right, known)
+            break
+        case nodeType.UNOP:
+            validateNode(node.operand, known)
+            break
+        case nodeType.IDENTIFIER:
+            if (!known.has(node.name)) {
+                throw new UnknownIdentifierError(node)
+            }
+            break
+        case nodeType.FUNCTION:
+            if (!(node.name in builtins)) {
+                throw new UnknownIdentifierError(node)
+            }
+            for (let arg of node.args) {
+                validateNode(arg, known)
+            }
+            break
     }
 }
 
@@ -64,8 +68,12 @@ export class Program {
     }
 
     validate() {
+        const known = new Set(predefinedVariables)
         for (let statement of this.ast) {
-            validateNode(statement)
+            if (statement.type == nodeType.ASSIGNMENT) {
+                validateNode(statement.value, known)
+                known.add(statement.identifier.name)
+            }
         }
     }
 
@@ -93,7 +101,7 @@ export class Program {
         }
         for (let statement of this.ast) {
             if (statement.type == nodeType.ASSIGNMENT) {
-                symbols[statement.identifier.text] = evaluate(statement.value, symbols)
+                symbols[statement.identifier.name] = evaluate(statement.value, symbols)
             }
         }
         return symbols
@@ -103,14 +111,14 @@ export class Program {
         if (!output) {
             output = 'result'
         }
-        let known = ['iTime', 'fixedX', 'fixedY', 'iResolution', 't', 'x', 'y', 'red', 'green', 'blue', 'width', 'height', 'pi', 'tau']
+        const known = new Set(predefinedVariables)
         const lines = this.ast.map(statement => {
             if (statement.type == nodeType.ASSIGNMENT) {
-                if (known.includes(statement.identifier.text)) {
+                if (known.has(statement.identifier.name)) {
                     return this.printGLSL(statement) + ';'
                 } else {
-                    known.push(statement.identifier.text)
-                    return `float ${statement.identifier.text} = ${this.printGLSL(statement.value)};`
+                    known.has(statement.identifier.name)
+                    return `float ${statement.identifier.name} = ${this.printGLSL(statement.value)};`
                 }
             }
             return ''

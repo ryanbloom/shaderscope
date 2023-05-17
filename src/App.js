@@ -4,7 +4,7 @@ import { CanvasPane } from './CanvasPane'
 import { Editor } from './Editor'
 import { Timeline } from './Timeline'
 import { Program, UnknownIdentifierError } from './language'
-import { nameLiteral, defaultSource } from './options'
+import { nameLiteral, defaultSource, defaultDuration } from './options'
 import './app.css'
 
 import LogoImage from './logo.svg'
@@ -58,7 +58,8 @@ export function App() {
     const [runningShaderInfo, setRunningShaderInfo] = useState({
         source: initialSource,
         program: initialProgram,
-        duration: 5.0
+        literals: initialProgram.getLiteralValues(),
+        duration: defaultDuration
     })
 
     function run(source) {
@@ -79,6 +80,8 @@ export function App() {
                 setError(err)
             } else if (err instanceof UnknownIdentifierError) {
                 setError(err)
+            } else {
+                console.log(err)
             }
         }
     }

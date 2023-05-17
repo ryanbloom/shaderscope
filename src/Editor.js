@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { Button } from './Button'
 import { variableWidgets } from './editor/variableWidgets'
 import CodeMirror from '@uiw/react-codemirror'
 
@@ -16,11 +15,12 @@ export function Editor(props) {
             props.toggle()
         }
     }
+    const customExtensions = props.editable ? [] : [variableWidgets(props)]
     return <div className={`flex-grow ${props.editable ? '' : 'readonly'}`} style={{ pointerEvents: props.editable ? 'auto' : 'none' }}>
         <CodeMirror
             value={props.sourceCode}
             editable={props.editable}
-            extensions={props.editable ? [] : [variableWidgets(props)]}
+            extensions={customExtensions}
             fontSize={16}
             height="500px"
             onKeyDown={keyPress}

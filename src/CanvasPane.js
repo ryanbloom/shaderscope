@@ -21,7 +21,7 @@ export function CanvasPane(props) {
     }
     
     let errorDiv = props.error
-    ? <div className='code error absolute p-4 text-white bg-black/80 w-full h-full'>
+    ? <div className='code error absolute p-4 text-white bg-black/70 w-full h-full'>
             {props.error.description(props.shader.source)}
         </div>
         : []
